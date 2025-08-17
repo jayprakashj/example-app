@@ -5,19 +5,22 @@ use App\Http\Controllers\CsrfVerificationController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Pipeline\Pipeline;
+use App\Facades\Payment;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
+// Using Service Container & Providers
 Route::get('/pay', [PaymentController::class, 'pay']);
 
+// Using CSRF Verification Bypass
 Route::get('/csrf-verification-bypass', [CsrfVerificationController::class, 'index'])->name('csrf-verification-bypass');
-
 Route::withoutMiddleware([VerifyCsrfToken::class])->group(function () {
     Route::post('/csrf-verification-bypass', [CsrfVerificationController::class, 'store'])->name('csrf-verification-bypass.store');
 });
 
+// Using Pipeline with Classes
 Route::get('pipeline-demo', function () {
     $text = "   Laravel pipeline is Powerful!   ";
     $processed = app(Pipeline::class)
@@ -33,8 +36,7 @@ Route::get('pipeline-demo', function () {
 });
 
 
-// Using Closures Instead of Classes
-
+// Using Pipeline with Closures
 Route::get('pipeline-demo-closures', function () {
     $text = "   Laravel pipeline is Powerful!   ";
     $processed = app(Pipeline::class)
@@ -47,4 +49,13 @@ Route::get('pipeline-demo-closures', function () {
         ->thenReturn();
 
     return $processed;
+});
+
+
+// Using Facades
+Route::get('/pay-facade', function () {
+    return Payment::charge(1000);
+});
+Route::get('/refund-facade', function () {
+    return Payment::refund(500);
 });

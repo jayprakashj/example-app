@@ -59,3 +59,27 @@ Route::get('/pay-facade', function () {
 Route::get('/refund-facade', function () {
     return Payment::refund(500);
 });
+
+// Rate Limiting Requests with Middleware
+Route::middleware('throttle:10,1')->group(function () {
+    Route::get('/rate-limit-demo', function () {
+        return 'Rate limited request!';
+    });
+});
+
+// Using Route Match & Any Methods
+Route::match(['get', 'post'], '/match-request', function () {
+    if (request()->isMethod('post')) {
+        return "POST Request: Form submitted successfully!";
+    }
+
+    return "GET Request: Contact form page!";
+});
+
+Route::match(['get', 'post'], '/match-request-with-status/{status}', function ($status) {
+    return "Match Request: Payment status: {$status}";
+})->where('status', 'success|failed|pending');
+
+Route::any('/any-request', function () {
+    return "Any Request: This route responds to ANY HTTP method!";
+});

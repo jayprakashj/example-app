@@ -31,3 +31,20 @@ Route::get('pipeline-demo', function () {
 
     return $processed;
 });
+
+
+// Using Closures Instead of Classes
+
+Route::get('pipeline-demo-closures', function () {
+    $text = "   Laravel pipeline is Powerful!   ";
+    $processed = app(Pipeline::class)
+        ->send($text) // input
+        ->through([
+            fn($content, $next) => $next(trim($content)), // trim
+            fn($content, $next) => $next(strtolower($content)), // convert to lower
+            fn($content, $next) => $next($content . ' ~ Laravel 12'), // append signature
+        ])
+        ->thenReturn();
+
+    return $processed;
+});

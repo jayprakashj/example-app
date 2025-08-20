@@ -1,0 +1,226 @@
+Laravel Relationships
+- One to One
+
+    - User has one Profile
+    - Profile belongs to User
+
+    User.php
+    public function profile()
+    {
+        return $this->hasOne(Profile::class);
+    }
+
+
+    Profile.php
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+- One to Many
+
+    - User has many Posts
+    - Post belongs to User
+
+    User.php
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    Post.php
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+- Many to Many
+
+    - User can have multiple roles
+    - Role can have multiple users
+
+    User.php
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'user_role', 'user_id', 'role_id');
+    }
+
+
+    Role.php
+    public function users()
+    {
+        <!-- 
+            User::class, 
+            'user_role', // The name of the intermediate table
+            'role_id', // The foreign key on the intermediate table
+            'user_id', // The foreign key on the intermediate table
+            'id', // The local key on the Role table
+            'id' // The local key on the User table
+        -->
+        return $this->belongsToMany(User::class, 'user_role', 'role_id', 'user_id');
+    }
+
+- hasOneThrough
+
+    - User has one Address through Profile
+    - Address belongs to Profile
+
+    User.php
+    public function address()
+    {
+        <!-- 
+            Address::class, 
+            Profile::class, 
+            'user_id', // Foreign key on the Profile table
+            'profile_id', // Foreign key on the Address table
+            'id', // Local key on the User table (primary key on the User table)
+            'id' // Local key on the Profile table (primary key on the Profile table)
+        -->
+        return $this->hasOneThrough(Address::class, Profile::class, 'user_id', 'profile_id', 'id', 'id');
+    }
+
+    Profile.php
+    public function address()
+    {
+        return $this->hasOne(Address::class);
+    }
+
+    Address.php
+    public function profile()
+    {
+        return $this->belongsTo(Profile::class);
+    }
+
+- hasManyThrough
+
+    - Website has many Posts through Users
+    - Post belongs to User
+
+    Website.php
+    public function posts()
+    {
+        <!-- 
+            Post::class, 
+            User::class, 
+            'website_id', // Foreign key on the User table
+            'user_id', // Foreign key on the Post table
+            'id', // Local key on the Website table
+            'id' // Local key on the User table
+        -->
+        return $this->hasManyThrough(Post::class, User::class, 'website_id', 'user_id', 'id', 'id');
+    }
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
+
+    User.php
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    Post.php
+    public function website()
+    {
+        return $this->belongsTo(Website::class);
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+
+- One to One (Polymorphic)
+
+    - Image can have one featured image for User or Product
+
+    User.php
+    public function featuredImage()
+    {
+        return $this->morphOne(Image::class, 'imageable');
+    }
+
+    Product.php
+    public function featuredImage()
+    {
+        return $this->morphOne(Image::class, 'imageable');
+    }
+
+    Image.php
+    public function imageable()
+    {
+        return $this->morphTo();
+    }
+
+- One to Many (Polymorphic)
+
+    - A Post & Video can have multiple comments
+
+    Post.php
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+
+    Video.php
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+
+    Comment.php
+    public function commentable()
+    {
+        return $this->morphTo();
+    }
+
+- Many to Many (Polymorphic)
+
+
+posts
+    id - integer
+    name - string
+videos
+    id - integer
+    name - string
+tags
+    id - integer
+    name - string
+taggables
+    tag_id - integer
+    taggable_id - integer
+    taggable_type - string
+
+
+    - A Post & Video can have multiple tags
+
+    Post.php
+    public function tags()
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
+
+    Video.php
+    public function tags()
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
+
+    Tag.php
+    public function posts()
+    {
+        return $this->morphedByMany(Post::class, 'taggable');
+    }
+
+    public function videos()
+    {
+        return $this->morphedByMany(Video::class, 'taggable');
+    }
+
+    Taggable.php
+    public function taggable()
+    {
+        return $this->morphTo();
+    }

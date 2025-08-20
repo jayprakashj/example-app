@@ -36,6 +36,16 @@ Laravel Relationships
 
 - Many to Many
 
+users
+    id - integer
+    name - string
+roles
+    id - integer
+    name - string
+role_user
+    user_id - integer
+    role_id - integer
+
     - User can have multiple roles
     - Role can have multiple users
 

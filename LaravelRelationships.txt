@@ -134,7 +134,19 @@ Laravel Relationships
 
 - One to One (Polymorphic)
 
-    - Image can have one featured image for User or Product
+posts
+    id - integer
+    name - string
+users
+    id - integer
+    name - string
+images
+    id - integer
+    url - string
+    imageable_id - integer
+    imageable_type - string
+
+    - Image can have one featured image for User or Post
 
     User.php
     public function featuredImage()
@@ -142,7 +154,7 @@ Laravel Relationships
         return $this->morphOne(Image::class, 'imageable');
     }
 
-    Product.php
+    Post.php
     public function featuredImage()
     {
         return $this->morphOne(Image::class, 'imageable');
@@ -155,6 +167,20 @@ Laravel Relationships
     }
 
 - One to Many (Polymorphic)
+
+posts
+    id - integer
+    title - string
+    body - text
+videos
+    id - integer
+    title - string
+    url - string
+comments
+    id - integer
+    body - text
+    commentable_id - integer
+    commentable_type - string
 
     - A Post & Video can have multiple comments
 
